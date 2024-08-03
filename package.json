@@ -1,0 +1,17 @@
+{
+  "name": "canvas",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev:serve && npm run dev:watch",
+    "dev:watch": "node node_modules/.bin/tsc --watch",
+    "dev:serve": "python3 -m http.server 8080 &"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
