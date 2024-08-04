@@ -41,7 +41,7 @@ function render(ts) {
         fps = computeFps(dt);
         dtCounter = 0;
     }
-    computePlayerPos(player, pressedKeys, WIDTH, HEIGHT);
+    player.handleInputs(WIDTH, HEIGHT);
     CTX.clearRect(0, 0, WIDTH, HEIGHT);
     CTX.fillStyle = "black";
     CTX.fillRect(0, 0, WIDTH, HEIGHT);
@@ -49,12 +49,12 @@ function render(ts) {
     CTX.fillStyle = "white";
     CTX.fillText(`FPS: ${fps.toFixed(2)}`, 10, 20);
     CTX.beginPath();
-    CTX.arc(player.position.x * WIDTH, player.position.y * HEIGHT, player.radius, 0, 2 * Math.PI, false);
+    player.render(CTX, WIDTH, HEIGHT);
     CTX.fillStyle = "blue";
     CTX.fill();
     requestAnimationFrame(render);
 }
-document.addEventListener("keydown", (e) => pressedKeys.add(e.code));
-document.addEventListener("keyup", (e) => pressedKeys.delete(e.code));
+document.addEventListener("keydown", (e) => player.pressedKeys.add(e.code));
+document.addEventListener("keyup", (e) => player.pressedKeys.delete(e.code));
 window.addEventListener("blur", () => pressedKeys.clear());
 requestAnimationFrame(render);

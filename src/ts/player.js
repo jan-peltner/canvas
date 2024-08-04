@@ -1,27 +1,39 @@
+import Entity from "./entity.js";
 import Vector2 from "./vector.js";
-const PLAYER_RADIUS = 30;
-const PLAYER_VELOCITY = new Vector2(0.2, 0.2);
-export default class Player {
-    position;
-    radius;
+export default class Player extends Entity {
+    static PLAYER_RADIUS = 30;
+    static PLAYER_VELOCITY = new Vector2(0.2, 0.2);
+    pressedKeys = new Set();
     static spawnCentral() {
-        return new Player(Vector2.createCentral(), PLAYER_RADIUS);
+        return new Player(Vector2.createCentral(), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY);
     }
-    constructor(pos, r) {
-        this.position = pos;
-        this.radius = r;
+    constructor(p, r, v) {
+        super(p, r, v);
     }
     move(v, w, h) {
-        const dxdy = v.elementwiseMultiply(PLAYER_VELOCITY);
+        const dxdy = v.elementwiseMultiply(Player.PLAYER_VELOCITY);
         const newPos = this.position.add(dxdy);
-        const absolutePosition = newPos.elementwiseMultiply(new Vector2(w, h));
-        if (absolutePosition.x - this.radius <= 0
-            || absolutePosition.x + this.radius >= w
-            || absolutePosition.y - this.radius <= 0
-            || absolutePosition.y + this.radius >= h) {
-            return this;
+        if (!this.isOutsideCnvsBoundaries(newPos, w, h)) {
+            this.position = newPos;
         }
-        this.position = newPos;
-        return this;
+    }
+    handleInputs(w, h) {
+        this.pressedKeys.forEach(key => {
+            if (key === "KeyW") {
+                this.move(new Vector2(0, -0.01), w, h);
+                return;
+            }
+            if (key === "KeyS") {
+                this.move(new Vector2(0, 0.01), w, h);
+                return;
+            }
+            if (key === "KeyD") {
+                this.move(new Vector2(0.01, 0), w, h);
+                return;
+            }
+            if (key === "KeyA") {
+                this.move(new Vector2(-0.01, 0), w, h);
+            }
+        });
     }
 }

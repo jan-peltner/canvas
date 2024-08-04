@@ -6,7 +6,7 @@ export default class Vector2 {
 		return new Vector2(0.5, 0.5);
 	}
 
-	constructor(x: number, y: number) {
+	public constructor(x: number, y: number) {
 		this.x = x;
 		this.y = y;
 	}
