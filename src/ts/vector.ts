@@ -1,6 +1,6 @@
 export default class Vector2 {
-	public x: number;
-	public y: number;
+	public readonly x: number;
+	public readonly y: number;
 
 	public static createCentral(): Vector2 {
 		return new Vector2(0.5, 0.5);
@@ -11,31 +11,46 @@ export default class Vector2 {
 		this.y = y;
 	}
 
-	public add(v: Vector2 | number): this {
+	public add(v: Vector2 | number): Vector2 {
 		if (v instanceof Vector2) {
-			this.x += v.x;
-			this.y += v.y;
+			return new Vector2(
+				this.x + v.x,
+				this.y + v.y
+			)
 		} else {
-			this.x += v;
-			this.y += v;
+			return new Vector2(
+				this.x + v,
+				this.y + v
+			)
 		}
-		return this;
 	}
 
-	public sub(v: Vector2 | number): this {
+	public sub(v: Vector2 | number): Vector2 {
 		if (v instanceof Vector2) {
-			this.x -= v.x;
-			this.y -= v.y;
+			return new Vector2(
+				this.x - v.x,
+				this.y - v.y
+			)
 		} else {
-			this.x -= v;
-			this.y -= v;
+			return new Vector2(
+				this.x - v,
+				this.y - v
+			)
 		}
-		return this;
 	}
 
-	public scale(val: number): this {
-		this.x *= val;
-		this.y *= val;
-		return this;
+	// elementwise multiplication
+	public ewm(v: Vector2): Vector2 {
+		return new Vector2(
+			this.x * v.x,
+			this.y * v.y
+		)
+	}
+
+	public scale(val: number): Vector2 {
+		return new Vector2(
+			this.x * val,
+			this.y * val
+		)
 	}
 }

@@ -10,29 +10,25 @@ export default class Vector2 {
     }
     add(v) {
         if (v instanceof Vector2) {
-            this.x += v.x;
-            this.y += v.y;
+            return new Vector2(this.x + v.x, this.y + v.y);
         }
         else {
-            this.x += v;
-            this.y += v;
+            return new Vector2(this.x + v, this.y + v);
         }
-        return this;
     }
     sub(v) {
         if (v instanceof Vector2) {
-            this.x -= v.x;
-            this.y -= v.y;
+            return new Vector2(this.x - v.x, this.y - v.y);
         }
         else {
-            this.x -= v;
-            this.y -= v;
+            return new Vector2(this.x - v, this.y - v);
         }
-        return this;
+    }
+    // elementwise multiplication
+    ewm(v) {
+        return new Vector2(this.x * v.x, this.y * v.y);
     }
     scale(val) {
-        this.x *= val;
-        this.y *= val;
-        return this;
+        return new Vector2(this.x * val, this.y * val);
     }
 }
