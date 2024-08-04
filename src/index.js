@@ -56,4 +56,5 @@ function render(ts) {
 }
 document.addEventListener("keydown", (e) => pressedKeys.add(e.code));
 document.addEventListener("keyup", (e) => pressedKeys.delete(e.code));
+window.addEventListener("blur", () => pressedKeys.clear());
 requestAnimationFrame(render);
