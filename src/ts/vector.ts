@@ -39,8 +39,7 @@ export default class Vector2 {
 		}
 	}
 
-	// elementwise multiplication
-	public ewm(v: Vector2): Vector2 {
+	public elementwiseMultiply(v: Vector2): Vector2 {
 		return new Vector2(
 			this.x * v.x,
 			this.y * v.y

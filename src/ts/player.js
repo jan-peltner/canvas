@@ -1,6 +1,6 @@
 import Vector2 from "./vector.js";
 const PLAYER_RADIUS = 30;
-const PLAYER_MOVEMENT_SCALAR = 0.2;
+const PLAYER_VELOCITY = new Vector2(0.2, 0.2);
 export default class Player {
     position;
     radius;
@@ -11,19 +11,17 @@ export default class Player {
         this.position = pos;
         this.radius = r;
     }
-    move(v, w, y) {
-        const dxdy = v.scale(PLAYER_MOVEMENT_SCALAR);
+    move(v, w, h) {
+        const dxdy = v.elementwiseMultiply(PLAYER_VELOCITY);
         const newPos = this.position.add(dxdy);
-        const absolutePosition = newPos.ewm(new Vector2(w, y));
+        const absolutePosition = newPos.elementwiseMultiply(new Vector2(w, h));
         if (absolutePosition.x - this.radius <= 0
             || absolutePosition.x + this.radius >= w
             || absolutePosition.y - this.radius <= 0
-            || absolutePosition.y + this.radius >= y) {
+            || absolutePosition.y + this.radius >= h) {
             return this;
         }
-        else {
-            this.position = newPos;
-        }
+        this.position = newPos;
         return this;
     }
 }
