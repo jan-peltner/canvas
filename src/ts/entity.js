@@ -1,5 +1,6 @@
 import Vector2 from "./vector.js";
 export default class Entity {
+    static entities = new Array();
     position;
     velocity;
     radius;
@@ -7,6 +8,7 @@ export default class Entity {
         this.position = p;
         this.radius = r;
         this.velocity = v;
+        Entity.entities.push(this);
     }
     isOutsideCnvsBoundaries(newPos, w, h) {
         const newPosAbsolute = newPos.elementwiseMultiply(new Vector2(w, h));
@@ -15,7 +17,10 @@ export default class Entity {
             || newPosAbsolute.y - this.radius <= 0
             || newPosAbsolute.y + this.radius >= h;
     }
-    render(ctx, w, h) {
+    destruct() {
+        Entity.entities.filter(e => e !== this);
+    }
+    renderSelf(ctx, w, h) {
         ctx.arc(this.position.x * w, this.position.y * h, this.radius, 0, 2 * Math.PI, false);
     }
 }

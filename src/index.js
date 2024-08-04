@@ -1,5 +1,4 @@
 import * as SETUP from "./ts/setup.js";
-import Vector2 from "./ts/vector.js";
 import Player from "./ts/player.js";
 const { CNVS, CTX } = SETUP;
 let dt, last = 0;
@@ -9,25 +8,6 @@ let player;
 const pressedKeys = new Set();
 function computeFps(dt) {
     return (1000 / dt);
-}
-function computePlayerPos(player, keys, w, h) {
-    keys.forEach(key => {
-        if (key === "KeyW") {
-            player.move(new Vector2(0, -0.01), w, h);
-            return;
-        }
-        if (key === "KeyS") {
-            player.move(new Vector2(0, 0.01), w, h);
-            return;
-        }
-        if (key === "KeyD") {
-            player.move(new Vector2(0.01, 0), w, h);
-            return;
-        }
-        if (key === "KeyA") {
-            player.move(new Vector2(-0.01, 0), w, h);
-        }
-    });
 }
 function render(ts) {
     const { width: WIDTH, height: HEIGHT } = CNVS;
@@ -41,7 +21,6 @@ function render(ts) {
         fps = computeFps(dt);
         dtCounter = 0;
     }
-    player.handleInputs(WIDTH, HEIGHT);
     CTX.clearRect(0, 0, WIDTH, HEIGHT);
     CTX.fillStyle = "black";
     CTX.fillRect(0, 0, WIDTH, HEIGHT);
@@ -49,12 +28,14 @@ function render(ts) {
     CTX.fillStyle = "white";
     CTX.fillText(`FPS: ${fps.toFixed(2)}`, 10, 20);
     CTX.beginPath();
-    player.render(CTX, WIDTH, HEIGHT);
+    player.update(CTX, dt / 1000, WIDTH, HEIGHT);
     CTX.fillStyle = "blue";
     CTX.fill();
     requestAnimationFrame(render);
 }
 document.addEventListener("keydown", (e) => player.pressedKeys.add(e.code));
 document.addEventListener("keyup", (e) => player.pressedKeys.delete(e.code));
+document.addEventListener("mousedown", (e) => player.isAttacking = true);
+document.addEventListener("mouseup", (e) => player.isAttacking = false);
 window.addEventListener("blur", () => pressedKeys.clear());
 requestAnimationFrame(render);
