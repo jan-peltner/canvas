@@ -1,6 +1,10 @@
+import CanvasSingleton from "./canvas.js";
 import Vector2 from "./vector.js";
 
+const canvas = CanvasSingleton.getInstance();
+
 export default abstract class Entity {
+	protected absolutePosition!: Vector2;
 	public static entities: Array<Entity> = new Array();
 	public position: Vector2;
 	public velocity: Vector2;
@@ -13,23 +17,27 @@ export default abstract class Entity {
 		Entity.entities.push(this);
 	}
 
-	protected isOutsideCnvsBoundaries(newPos: Vector2, w: number, h: number): boolean {
-		const newPosAbsolute = newPos.elementwiseMultiply(new Vector2(w, h));
+	protected isOutsideCnvsBoundaries(newPos: Vector2): boolean {
+		const newPosAbsolute = newPos.elementwiseMultiply(new Vector2(canvas.width, canvas.height));
 		return newPosAbsolute.x - this.radius <= 0
-			|| newPosAbsolute.x + this.radius >= w
+			|| newPosAbsolute.x + this.radius >= canvas.width
 			|| newPosAbsolute.y - this.radius <= 0
-			|| newPosAbsolute.y + this.radius >= h
+			|| newPosAbsolute.y + this.radius >= canvas.height
 	}
 
-	protected abstract move(v: Vector2, dt: number, w: number, h: number): void
+	protected abstract move(v: Vector2, dt: number): void
 
-	public abstract update(ctx: CanvasRenderingContext2D, dt: number, w: number, h: number): void
+	protected computeAbsolutePosition() {
+		this.absolutePosition = this.position.elementwiseMultiply(canvas.asVector2());
+	}
+
+	public abstract update(dt: number, mousePos?: Vector2): void
 
 	public destruct() {
 		Entity.entities.filter(e => e !== this);
 	}
 
-	public renderSelf(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-		ctx.arc(this.position.x * w, this.position.y * h, this.radius, 0, 2 * Math.PI, false);
+	public renderSelf(): void {
+		canvas.ctx.arc(this.absolutePosition.x, this.absolutePosition.y, this.radius, 0, 2 * Math.PI, false);
 	}
 }

@@ -1,16 +1,15 @@
-import * as SETUP from "./ts/setup.js";
+import CanvasSingleton from "./ts/canvas.js";
 import Player from "./ts/player.js";
-const { CNVS, CTX } = SETUP;
-let dt, last = 0;
-let fps = 0;
-let dtCounter = 0;
+import { getMousePos } from "./ts/helpers.js";
+const canvas = CanvasSingleton.getInstance();
+let dt, last = 0, fps = 0, dtCounter = 0;
 let player;
+let mousePos;
 const pressedKeys = new Set();
 function computeFps(dt) {
     return (1000 / dt);
 }
 function render(ts) {
-    const { width: WIDTH, height: HEIGHT } = CNVS;
     if (!player) {
         player = Player.spawnCentral();
     }
@@ -21,21 +20,28 @@ function render(ts) {
         fps = computeFps(dt);
         dtCounter = 0;
     }
-    CTX.clearRect(0, 0, WIDTH, HEIGHT);
-    CTX.fillStyle = "black";
-    CTX.fillRect(0, 0, WIDTH, HEIGHT);
-    CTX.font = "12px Fragment Mono";
-    CTX.fillStyle = "white";
-    CTX.fillText(`FPS: ${fps.toFixed(2)}`, 10, 20);
-    CTX.beginPath();
-    player.update(CTX, dt / 1000, WIDTH, HEIGHT);
-    CTX.fillStyle = "blue";
-    CTX.fill();
+    canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.ctx.fillStyle = "black";
+    canvas.ctx.fillRect(0, 0, canvas.width, canvas.height);
+    canvas.ctx.font = "12px Fragment Mono";
+    canvas.ctx.fillStyle = "white";
+    canvas.ctx.fillText(`FPS: ${fps.toFixed(2)}`, 10, 20);
+    canvas.ctx.beginPath();
+    player.update(dt / 1000, mousePos);
+    canvas.ctx.fillStyle = "blue";
+    canvas.ctx.fill();
     requestAnimationFrame(render);
 }
 document.addEventListener("keydown", (e) => player.pressedKeys.add(e.code));
 document.addEventListener("keyup", (e) => player.pressedKeys.delete(e.code));
-document.addEventListener("mousedown", (e) => player.isAttacking = true);
-document.addEventListener("mouseup", (e) => player.isAttacking = false);
+document.addEventListener("mousedown", () => {
+    player.isAttacking = true;
+});
+document.addEventListener("mouseup", () => {
+    player.isAttacking = false;
+});
 window.addEventListener("blur", () => pressedKeys.clear());
+addEventListener('mousemove', (e) => {
+    mousePos = getMousePos(e);
+});
 requestAnimationFrame(render);

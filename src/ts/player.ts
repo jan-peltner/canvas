@@ -1,5 +1,8 @@
+import CanvasSingleton from "./canvas.js";
 import Entity from "./entity.js";
 import Vector2 from "./vector.js";
+
+const canvas = CanvasSingleton.getInstance();
 
 export default class Player extends Entity {
 	private static PLAYER_RADIUS: number = 30;
@@ -11,49 +14,56 @@ export default class Player extends Entity {
 		return new Player(Vector2.createCentral(), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY);
 	}
 
-	public static spawnTopLeft(w: number, h: number): Player {
-		return new Player(new Vector2((Player.PLAYER_RADIUS + 1) / w, (Player.PLAYER_RADIUS + 1) / h), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY);
+	public static spawnTopLeft(): Player {
+		return new Player(new Vector2((Player.PLAYER_RADIUS + 1) / canvas.width, (Player.PLAYER_RADIUS + 1) / canvas.height), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY);
 	}
 
 	private constructor(p: Vector2, r: number, v: Vector2) {
 		super(p, r, v);
 	}
 
-	protected move(v: Vector2, dt: number, w: number, h: number): void {
-		const dxdy = v.elementwiseMultiply(Player.PLAYER_VELOCITY).scale(dt);
+	protected move(v: Vector2, dtSecs: number): void {
+		const dxdy = v.elementwiseMultiply(Player.PLAYER_VELOCITY).scale(dtSecs);
 		const newPos = this.position.add(dxdy);
-		if (!this.isOutsideCnvsBoundaries(newPos, w, h)) {
+		if (!this.isOutsideCnvsBoundaries(newPos)) {
 			this.position = newPos;
 		}
 	}
 
-	public update(ctx: CanvasRenderingContext2D, dt: number, w: number, h: number): void {
-		this.handleInputs(dt, w, h);
-		this.renderSelf(ctx, w, h);
-		this.renderAttack(ctx, w, h);
+	public update(dtSecs: number, mousePos: Vector2): void {
+		this.computeAbsolutePosition();
+		this.handleInputs(dtSecs);
+		this.renderSelf();
+		if (this.isAttacking) {
+			this.renderAttack(mousePos);
+		}
 	}
 
-	private handleInputs(dt: number, w: number, h: number) {
+	private handleInputs(dtSecs: number) {
 		this.pressedKeys.forEach(key => {
 			if (key === "KeyW") {
-				this.move(new Vector2(0, -0.01), dt, w, h);
+				this.move(new Vector2(0, -0.01), dtSecs);
 				return;
 			}
 			if (key === "KeyS") {
-				this.move(new Vector2(0, 0.01), dt, w, h);
+				this.move(new Vector2(0, 0.01), dtSecs);
 				return;
 			}
 			if (key === "KeyD") {
-				this.move(new Vector2(0.01, 0), dt, w, h);
+				this.move(new Vector2(0.01, 0), dtSecs);
 				return;
 			}
 			if (key === "KeyA") {
-				this.move(new Vector2(-0.01, 0), dt, w, h);
+				this.move(new Vector2(-0.01, 0), dtSecs);
 			}
 		})
 	}
 
-	public renderAttack(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-
+	public renderAttack(mousePos: Vector2): void {
+		canvas.ctx.beginPath();
+		canvas.ctx.strokeStyle = 'green';
+		canvas.ctx.moveTo(this.absolutePosition.x, this.absolutePosition.y);
+		canvas.ctx.lineTo(mousePos.x, mousePos.y);
+		canvas.ctx.stroke();
 	}
 }
