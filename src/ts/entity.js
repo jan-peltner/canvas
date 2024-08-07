@@ -27,6 +27,11 @@ export default class Entity {
         Entity.entities.filter(e => e !== this);
     }
     renderSelf() {
+        canvas.ctx.beginPath();
+        canvas.ctx.strokeStyle = "blue";
         canvas.ctx.arc(this.absolutePosition.x, this.absolutePosition.y, this.radius, 0, 2 * Math.PI, false);
+        // canvas.ctx.fillStyle = "blue";
+        // canvas.ctx.fill();
+        canvas.ctx.stroke();
     }
 }

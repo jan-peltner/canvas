@@ -26,10 +26,12 @@ function render(ts) {
     canvas.ctx.font = "12px Fragment Mono";
     canvas.ctx.fillStyle = "white";
     canvas.ctx.fillText(`FPS: ${fps.toFixed(2)}`, 10, 20);
-    canvas.ctx.beginPath();
     player.update(dt / 1000, mousePos);
-    canvas.ctx.fillStyle = "blue";
-    canvas.ctx.fill();
+    // canvas.ctx.fillStyle = "blue";
+    // canvas.ctx.fill();
+    canvas.ctx.beginPath();
+    canvas.ctx.strokeStyle = "blue";
+    canvas.ctx.stroke();
     requestAnimationFrame(render);
 }
 document.addEventListener("keydown", (e) => player.pressedKeys.add(e.code));
