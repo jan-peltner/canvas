@@ -51,9 +51,11 @@ export default class Player extends Entity {
         });
     }
     renderAttack(mousePos) {
+        const direction = mousePos.sub(this.absolutePosition).normalize();
+        const playerPerimeterPositionalVector = this.absolutePosition.add(direction.scale(Player.PLAYER_RADIUS));
         canvas.ctx.beginPath();
         canvas.ctx.strokeStyle = 'green';
-        canvas.ctx.moveTo(this.absolutePosition.x, this.absolutePosition.y);
+        canvas.ctx.moveTo(playerPerimeterPositionalVector.x, playerPerimeterPositionalVector.y);
         canvas.ctx.lineTo(mousePos.x, mousePos.y);
         canvas.ctx.stroke();
     }
