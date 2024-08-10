@@ -30,7 +30,6 @@ export default class CanvasSingleton {
         this.ctx = CTX;
     }
     computeCanvasDimensions() {
-        console.log(this);
         this.width = window.innerWidth;
         this.height = window.innerHeight;
         this.canvasElement.width = this.width;

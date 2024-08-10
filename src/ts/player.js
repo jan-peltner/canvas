@@ -18,13 +18,12 @@ export default class Player extends Entity {
     }
     move(v, dtSecs) {
         const dxdy = v.elementwiseMultiply(Player.PLAYER_VELOCITY).scale(dtSecs);
-        const newPos = this.position.add(dxdy);
+        const newPos = this.relativePosition.add(dxdy);
         if (!this.isOutsideCnvsBoundaries(newPos)) {
-            this.position = newPos;
+            this.relativePosition = newPos;
         }
     }
     update(dtSecs, mousePos) {
-        this.computeAbsolutePosition();
         this.handleInputs(dtSecs);
         this.renderSelf();
         if (this.isAttacking) {
@@ -51,8 +50,15 @@ export default class Player extends Entity {
         });
     }
     renderAttack(mousePos) {
-        const direction = mousePos.sub(this.absolutePosition).normalize();
-        const playerPerimeterPositionalVector = this.absolutePosition.add(direction.scale(Player.PLAYER_RADIUS));
+        // NOTE: don't render attack if mouse position is inside player
+        // check if P->MP displacement vec's magnitude <= PLAYER_RADIUS
+        const displacementVector = mousePos.sub(this.absolutePosition);
+        if (Math.abs(displacementVector.magnitude()) < Player.PLAYER_RADIUS)
+            return;
+        //NOTE: normalize the displacement vec to get the direction as a unit vec
+        // then scale the by PLAYER_RADIUS
+        const directionUnitVector = displacementVector.normalize();
+        const playerPerimeterPositionalVector = this.absolutePosition.add(directionUnitVector.scale(Player.PLAYER_RADIUS));
         canvas.ctx.beginPath();
         canvas.ctx.strokeStyle = 'green';
         canvas.ctx.moveTo(playerPerimeterPositionalVector.x, playerPerimeterPositionalVector.y);

@@ -4,14 +4,13 @@ import Vector2 from "./vector.js";
 const canvas = CanvasSingleton.getInstance();
 
 export default abstract class Entity {
-	protected absolutePosition!: Vector2;
 	public static entities: Array<Entity> = new Array();
-	public position: Vector2;
+	public relativePosition: Vector2;
 	public velocity: Vector2;
 	public radius: number;
 
 	protected constructor(p: Vector2, r: number, v: Vector2) {
-		this.position = p;
+		this.relativePosition = p;
 		this.radius = r;
 		this.velocity = v;
 		Entity.entities.push(this);
@@ -27,8 +26,8 @@ export default abstract class Entity {
 
 	protected abstract move(v: Vector2, dt: number): void
 
-	protected computeAbsolutePosition() {
-		this.absolutePosition = this.position.elementwiseMultiply(canvas.asVector2());
+	public get absolutePosition(): Vector2 {
+		return new Vector2(this.relativePosition.x * canvas.width, this.relativePosition.y * canvas.height)
 	}
 
 	public abstract update(dt: number, mousePos?: Vector2): void

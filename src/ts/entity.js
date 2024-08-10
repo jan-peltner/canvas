@@ -2,13 +2,12 @@ import CanvasSingleton from "./canvas.js";
 import Vector2 from "./vector.js";
 const canvas = CanvasSingleton.getInstance();
 export default class Entity {
-    absolutePosition;
     static entities = new Array();
-    position;
+    relativePosition;
     velocity;
     radius;
     constructor(p, r, v) {
-        this.position = p;
+        this.relativePosition = p;
         this.radius = r;
         this.velocity = v;
         Entity.entities.push(this);
@@ -20,8 +19,8 @@ export default class Entity {
             || newPosAbsolute.y - this.radius <= 0
             || newPosAbsolute.y + this.radius >= canvas.height;
     }
-    computeAbsolutePosition() {
-        this.absolutePosition = this.position.elementwiseMultiply(canvas.asVector2());
+    get absolutePosition() {
+        return new Vector2(this.relativePosition.x * canvas.width, this.relativePosition.y * canvas.height);
     }
     destruct() {
         Entity.entities.filter(e => e !== this);
