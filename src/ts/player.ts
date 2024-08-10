@@ -64,8 +64,8 @@ export default class Player extends Entity {
 		const displacementVector = mousePos.sub(this.absolutePosition);
 		if (Math.abs(displacementVector.magnitude()) < Player.PLAYER_RADIUS) return;
 
-		//NOTE: normalize the displacement vec to get the direction as a unit vec
-		// then scale the by PLAYER_RADIUS
+		// NOTE: normalize the displacement vec to get the direction as a unit vec
+		// then scale by PLAYER_RADIUS
 		const directionUnitVector = displacementVector.normalize();
 		const playerPerimeterPositionalVector = this.absolutePosition.add(directionUnitVector.scale(Player.PLAYER_RADIUS));
 		canvas.ctx.beginPath();

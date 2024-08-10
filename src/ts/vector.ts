@@ -55,10 +55,10 @@ export default class Vector2 {
 		)
 	}
 
-	public scale(val: number): Vector2 {
+	public scale(scalar: number): Vector2 {
 		return new Vector2(
-			this.x * val,
-			this.y * val
+			this.x * scalar,
+			this.y * scalar
 		)
 	}
 }
