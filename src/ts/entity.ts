@@ -5,14 +5,19 @@ const canvas = CanvasSingleton.getInstance();
 
 export default abstract class Entity {
 	public static entities: Array<Entity> = new Array();
-	public relativePosition: Vector2;
-	public velocity: Vector2;
-	public radius: number;
+	protected _relativePosition!: Vector2;
+	protected _absolutePosition!: Vector2;
+	protected velocity: Vector2;
+	protected radius: number;
+	protected color: string;
+	protected attackColor: string;
 
-	protected constructor(p: Vector2, r: number, v: Vector2) {
+	protected constructor(p: Vector2, r: number, v: Vector2, c1: string, c2: string) {
 		this.relativePosition = p;
 		this.radius = r;
 		this.velocity = v;
+		this.color = c1;
+		this.attackColor = c2;
 		Entity.entities.push(this);
 	}
 
@@ -26,8 +31,26 @@ export default abstract class Entity {
 
 	protected abstract move(v: Vector2, dt: number): void
 
-	public get absolutePosition(): Vector2 {
-		return new Vector2(this.relativePosition.x * canvas.width, this.relativePosition.y * canvas.height)
+
+	protected set relativePosition(v: Vector2) {
+		this._relativePosition = v;
+		this._absolutePosition = new Vector2(this._relativePosition.x * canvas.width, this._relativePosition.y * canvas.height);
+	}
+
+	protected get relativePosition() {
+		return this._relativePosition;
+	}
+
+	protected get absolutePosition(): Vector2 {
+		return this._absolutePosition;
+	}
+
+	protected renderSelf(): void {
+		canvas.ctx.beginPath();
+		canvas.ctx.arc(this.absolutePosition.x, this.absolutePosition.y, this.radius, 0, 2 * Math.PI, false);
+		canvas.ctx.fillStyle = this.color;
+		canvas.ctx.fill();
+		canvas.ctx.stroke();
 	}
 
 	public abstract update(dt: number, mousePos?: Vector2): void
@@ -36,12 +59,4 @@ export default abstract class Entity {
 		Entity.entities.filter(e => e !== this);
 	}
 
-	public renderSelf(): void {
-		canvas.ctx.beginPath();
-		canvas.ctx.strokeStyle = "blue";
-		canvas.ctx.arc(this.absolutePosition.x, this.absolutePosition.y, this.radius, 0, 2 * Math.PI, false);
-		// canvas.ctx.fillStyle = "blue";
-		// canvas.ctx.fill();
-		canvas.ctx.stroke();
-	}
 }

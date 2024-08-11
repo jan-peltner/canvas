@@ -10,19 +10,20 @@ export default class Player extends Entity {
 	public pressedKeys: Set<string> = new Set();
 	public isAttacking: boolean = false;
 
-	public static spawnCentral(): Player {
-		return new Player(Vector2.createCentral(), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY);
+	public static spawnCentral(color: string, attackColor: string): Player {
+		return new Player(Vector2.createCentral(), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY, color, attackColor);
 	}
 
-	public static spawnTopLeft(): Player {
-		return new Player(new Vector2((Player.PLAYER_RADIUS + 1) / canvas.width, (Player.PLAYER_RADIUS + 1) / canvas.height), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY);
+	public static spawnTopLeft(color: string, attackColor: string): Player {
+		return new Player(new Vector2((Player.PLAYER_RADIUS + 1) / canvas.width, (Player.PLAYER_RADIUS + 1) / canvas.height), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY, color, attackColor);
 	}
 
-	private constructor(p: Vector2, r: number, v: Vector2) {
-		super(p, r, v);
+	private constructor(p: Vector2, r: number, v: Vector2, c1: string, c2: string) {
+		super(p, r, v, c1, c2);
 	}
 
 	protected move(v: Vector2, dtSecs: number): void {
+		this.animateTrail();
 		const dxdy = v.elementwiseMultiply(Player.PLAYER_VELOCITY).scale(dtSecs);
 		const newPos = this.relativePosition.add(dxdy);
 		if (!this.isOutsideCnvsBoundaries(newPos)) {
@@ -58,18 +59,22 @@ export default class Player extends Entity {
 		})
 	}
 
+	private animateTrail(): void {
+		// TODO: implementation via separate color transition class
+	}
+
 	public renderAttack(mousePos: Vector2): void {
 		// NOTE: don't render attack if mouse position is inside player
 		// check if P->MP displacement vec's magnitude <= PLAYER_RADIUS
 		const displacementVector = mousePos.sub(this.absolutePosition);
-		if (Math.abs(displacementVector.magnitude()) < Player.PLAYER_RADIUS) return;
+		if (Math.abs(displacementVector.magnitude()) <= Player.PLAYER_RADIUS) return;
 
 		// NOTE: normalize the displacement vec to get the direction as a unit vec
 		// then scale by PLAYER_RADIUS
 		const directionUnitVector = displacementVector.normalize();
 		const playerPerimeterPositionalVector = this.absolutePosition.add(directionUnitVector.scale(Player.PLAYER_RADIUS));
 		canvas.ctx.beginPath();
-		canvas.ctx.strokeStyle = 'green';
+		canvas.ctx.strokeStyle = this.attackColor;
 		canvas.ctx.moveTo(playerPerimeterPositionalVector.x, playerPerimeterPositionalVector.y);
 		canvas.ctx.lineTo(mousePos.x, mousePos.y);
 		canvas.ctx.stroke();

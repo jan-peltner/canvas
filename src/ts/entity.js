@@ -3,13 +3,18 @@ import Vector2 from "./vector.js";
 const canvas = CanvasSingleton.getInstance();
 export default class Entity {
     static entities = new Array();
-    relativePosition;
+    _relativePosition;
+    _absolutePosition;
     velocity;
     radius;
-    constructor(p, r, v) {
+    color;
+    attackColor;
+    constructor(p, r, v, c1, c2) {
         this.relativePosition = p;
         this.radius = r;
         this.velocity = v;
+        this.color = c1;
+        this.attackColor = c2;
         Entity.entities.push(this);
     }
     isOutsideCnvsBoundaries(newPos) {
@@ -19,18 +24,24 @@ export default class Entity {
             || newPosAbsolute.y - this.radius <= 0
             || newPosAbsolute.y + this.radius >= canvas.height;
     }
-    get absolutePosition() {
-        return new Vector2(this.relativePosition.x * canvas.width, this.relativePosition.y * canvas.height);
+    set relativePosition(v) {
+        this._relativePosition = v;
+        this._absolutePosition = new Vector2(this._relativePosition.x * canvas.width, this._relativePosition.y * canvas.height);
     }
-    destruct() {
-        Entity.entities.filter(e => e !== this);
+    get relativePosition() {
+        return this._relativePosition;
+    }
+    get absolutePosition() {
+        return this._absolutePosition;
     }
     renderSelf() {
         canvas.ctx.beginPath();
-        canvas.ctx.strokeStyle = "blue";
         canvas.ctx.arc(this.absolutePosition.x, this.absolutePosition.y, this.radius, 0, 2 * Math.PI, false);
-        // canvas.ctx.fillStyle = "blue";
-        // canvas.ctx.fill();
+        canvas.ctx.fillStyle = this.color;
+        canvas.ctx.fill();
         canvas.ctx.stroke();
+    }
+    destruct() {
+        Entity.entities.filter(e => e !== this);
     }
 }

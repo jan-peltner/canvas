@@ -34,7 +34,7 @@ export default class Vector2 {
     elementwiseMultiply(v) {
         return new Vector2(this.x * v.x, this.y * v.y);
     }
-    scale(val) {
-        return new Vector2(this.x * val, this.y * val);
+    scale(scalar) {
+        return new Vector2(this.x * scalar, this.y * scalar);
     }
 }
