@@ -1,20 +1,16 @@
-import CanvasSingleton from "./ts/canvas.js";
-import Player from "./ts/player.js";
-import Vector2 from "./ts/vector.js";
-import { getMousePos, computeFps } from "./ts/helpers.js";
-import COLORS from "./colors.js";
+import CanvasSingleton from "./core/canvas.js";
+import Player from "./entities/player.js";
+import Vector2 from "./utils/vector.js";
+import { getMousePos, computeFps } from "./utils/helpers.js";
+import COLORS from "./consts/colors.js";
 
 const canvas = CanvasSingleton.getInstance();
-
-let dt: number, last: number = 0, fps: number = 0, dtCounter: number = 0;
-let player: Player;
-let mousePos: Vector2;
+const player = Player.spawnCentral(COLORS.blue, COLORS.yellow);
 const pressedKeys: Set<string> = new Set();
+let dt: number, last: number = 0, fps: number = 0, dtCounter: number = 0;
+let mousePos: Vector2;
 
 function render(ts: DOMHighResTimeStamp): void {
-	if (!player) {
-		player = Player.spawnCentral(COLORS.blue, COLORS.yellow);
-	}
 	dt = ts - last;
 	last = ts;
 	dtCounter += dt;
@@ -32,11 +28,6 @@ function render(ts: DOMHighResTimeStamp): void {
 	canvas.ctx.fillText(`FPS: ${fps.toFixed(2)}`, 10, 20);
 
 	player.update(dt / 1000, mousePos);
-	// canvas.ctx.fillStyle = "blue";
-	// canvas.ctx.fill();
-	canvas.ctx.beginPath();
-	canvas.ctx.strokeStyle = COLORS.blue;
-	canvas.ctx.stroke();
 
 	requestAnimationFrame(render);
 }

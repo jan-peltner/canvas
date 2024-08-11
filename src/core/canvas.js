@@ -1,4 +1,4 @@
-import Vector2 from "./vector.js";
+import Vector2 from "../utils/vector.js";
 export default class CanvasSingleton {
     static instance;
     _width;

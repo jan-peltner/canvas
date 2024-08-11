@@ -1,5 +1,5 @@
-import CanvasSingleton from "./canvas.js";
-import Vector2 from "./vector.js";
+import CanvasSingleton from "../core/canvas.js";
+import Vector2 from "../utils/vector.js";
 
 const canvas = CanvasSingleton.getInstance();
 
