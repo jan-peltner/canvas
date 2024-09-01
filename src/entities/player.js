@@ -1,6 +1,7 @@
 import CanvasSingleton from "../core/canvas.js";
 import Entity from "../entities/entity.js";
 import Vector2 from "../utils/vector.js";
+import { intoRgbFunctionalNotation } from "../consts/colors.js";
 const canvas = CanvasSingleton.getInstance();
 export default class Player extends Entity {
     static PLAYER_RADIUS = 30;
@@ -17,7 +18,8 @@ export default class Player extends Entity {
         super(p, r, v, c1, c2);
     }
     move(v, dtSecs) {
-        this.animateTrail();
+        // push old position
+        this.pushPosition(this.absolutePosition);
         const dxdy = v.elementwiseMultiply(Player.PLAYER_VELOCITY).scale(dtSecs);
         const newPos = this.relativePosition.add(dxdy);
         if (!this.isOutsideCnvsBoundaries(newPos)) {
@@ -27,6 +29,7 @@ export default class Player extends Entity {
     update(dtSecs, mousePos) {
         this.handleInputs(dtSecs);
         this.renderSelf();
+        this.renderTrail();
         if (this.isAttacking) {
             this.renderAttack(mousePos);
         }
@@ -50,9 +53,6 @@ export default class Player extends Entity {
             }
         });
     }
-    animateTrail() {
-        // TODO: implementation via separate color transition class
-    }
     renderAttack(mousePos) {
         // NOTE: don't render attack if mouse position is inside player
         // check if P->MP displacement vec's magnitude <= PLAYER_RADIUS
@@ -64,7 +64,7 @@ export default class Player extends Entity {
         const directionUnitVector = displacementVector.normalize();
         const playerPerimeterPositionalVector = this.absolutePosition.add(directionUnitVector.scale(Player.PLAYER_RADIUS));
         canvas.ctx.beginPath();
-        canvas.ctx.strokeStyle = this.attackColor;
+        canvas.ctx.strokeStyle = intoRgbFunctionalNotation(this.attackColor);
         canvas.ctx.moveTo(playerPerimeterPositionalVector.x, playerPerimeterPositionalVector.y);
         canvas.ctx.lineTo(mousePos.x, mousePos.y);
         canvas.ctx.stroke();

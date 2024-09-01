@@ -1,7 +1,7 @@
 import CanvasSingleton from "./core/canvas.js";
 import Player from "./entities/player.js";
 import { getMousePos, computeFps } from "./utils/helpers.js";
-import COLORS from "./consts/colors.js";
+import { COLORS, intoRgbFunctionalNotation } from "./consts/colors.js";
 const canvas = CanvasSingleton.getInstance();
 const player = Player.spawnCentral(COLORS.blue, COLORS.yellow);
 const pressedKeys = new Set();
@@ -16,10 +16,10 @@ function render(ts) {
         dtCounter = 0;
     }
     canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.ctx.fillStyle = COLORS.base;
+    canvas.ctx.fillStyle = intoRgbFunctionalNotation(COLORS.base);
     canvas.ctx.fillRect(0, 0, canvas.width, canvas.height);
     canvas.ctx.font = "12px Fragment Mono";
-    canvas.ctx.fillStyle = COLORS.text;
+    canvas.ctx.fillStyle = intoRgbFunctionalNotation(COLORS.text);
     canvas.ctx.fillText(`FPS: ${fps.toFixed(2)}`, 10, 20);
     player.update(dt / 1000, mousePos);
     requestAnimationFrame(render);

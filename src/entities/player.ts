@@ -1,6 +1,7 @@
 import CanvasSingleton from "../core/canvas.js";
 import Entity from "../entities/entity.js";
 import Vector2 from "../utils/vector.js";
+import { RGBAColor, intoRgbFunctionalNotation } from "../consts/colors.js";
 
 const canvas = CanvasSingleton.getInstance();
 
@@ -10,20 +11,21 @@ export default class Player extends Entity {
 	public pressedKeys: Set<string> = new Set();
 	public isAttacking: boolean = false;
 
-	public static spawnCentral(color: string, attackColor: string): Player {
+	public static spawnCentral(color: RGBAColor, attackColor: RGBAColor): Player {
 		return new Player(Vector2.createCentral(), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY, color, attackColor);
 	}
 
-	public static spawnTopLeft(color: string, attackColor: string): Player {
+	public static spawnTopLeft(color: RGBAColor, attackColor: RGBAColor): Player {
 		return new Player(new Vector2((Player.PLAYER_RADIUS + 1) / canvas.width, (Player.PLAYER_RADIUS + 1) / canvas.height), Player.PLAYER_RADIUS, Player.PLAYER_VELOCITY, color, attackColor);
 	}
 
-	private constructor(p: Vector2, r: number, v: Vector2, c1: string, c2: string) {
+	private constructor(p: Vector2, r: number, v: Vector2, c1: RGBAColor, c2: RGBAColor) {
 		super(p, r, v, c1, c2);
 	}
 
 	protected move(v: Vector2, dtSecs: number): void {
-		this.animateTrail();
+		// push old position
+		this.pushPosition(this.absolutePosition);
 		const dxdy = v.elementwiseMultiply(Player.PLAYER_VELOCITY).scale(dtSecs);
 		const newPos = this.relativePosition.add(dxdy);
 		if (!this.isOutsideCnvsBoundaries(newPos)) {
@@ -34,6 +36,7 @@ export default class Player extends Entity {
 	public update(dtSecs: number, mousePos: Vector2): void {
 		this.handleInputs(dtSecs);
 		this.renderSelf();
+		this.renderTrail();
 		if (this.isAttacking) {
 			this.renderAttack(mousePos);
 		}
@@ -59,10 +62,6 @@ export default class Player extends Entity {
 		})
 	}
 
-	private animateTrail(): void {
-		// TODO: implementation via separate color transition class
-	}
-
 	public renderAttack(mousePos: Vector2): void {
 		// NOTE: don't render attack if mouse position is inside player
 		// check if P->MP displacement vec's magnitude <= PLAYER_RADIUS
@@ -74,7 +73,7 @@ export default class Player extends Entity {
 		const directionUnitVector = displacementVector.normalize();
 		const playerPerimeterPositionalVector = this.absolutePosition.add(directionUnitVector.scale(Player.PLAYER_RADIUS));
 		canvas.ctx.beginPath();
-		canvas.ctx.strokeStyle = this.attackColor;
+		canvas.ctx.strokeStyle = intoRgbFunctionalNotation(this.attackColor);
 		canvas.ctx.moveTo(playerPerimeterPositionalVector.x, playerPerimeterPositionalVector.y);
 		canvas.ctx.lineTo(mousePos.x, mousePos.y);
 		canvas.ctx.stroke();
